@@ -31,6 +31,24 @@
       </ul>
     </section>
 
+    <section class="calculator__how-to">
+      <h2 class="how-to__title">Where to find these on Yahoo Finance</h2>
+      <p>
+        Go to the company's page on
+        <a href="https://finance.yahoo.com" target="_blank" rel="noopener noreferrer">finance.yahoo.com</a>,
+        select the <strong>Financials</strong> tab, then <strong>Cash Flow Statement</strong>.
+        Use the most recent annual (TTM or latest fiscal year) figures for:
+      </p>
+      <ul>
+        <li><strong>Diluted average shares</strong> &mdash; found under
+          <em>Cash Flow &gt; Diluted Average Shares</em> (near the bottom of the statement).</li>
+        <li><strong>Operating cash flow</strong> &mdash; listed as
+          <em>Operating Cash Flow</em> (or "Cash Flow from Operating Activities").</li>
+        <li><strong>CapEx</strong> &mdash; listed as
+          <em>Capital Expenditure</em> (usually shown as a negative number &mdash; enter it as a positive value here).</li>
+      </ul>
+    </section>
+
     <form id="calculator-form" class="calculator__form">
 
       <div class="field">
@@ -73,6 +91,14 @@
       <button type="submit" class="calculator__submit">Calculate target price</button>
     </form>
 
+    <!--
+      Each .result div is one row: a label + its value, kept together as a single unit.
+      The label and value are <span>s (inline, no inherent meaning) rather than <div>s
+      because they're two fragments of text on the same line, not separate blocks.
+      - result__label: styling hook for CSS (e.g. smaller, muted text).
+      - result__value: has a unique id so script.js can target and update just the
+        number (via getElementById) without touching the label or row markup.
+    -->
     <section id="results" class="calculator__results" hidden>
       <div class="result">
         <span class="result__label">Owner earnings per share</span>
