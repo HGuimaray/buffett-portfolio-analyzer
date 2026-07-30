@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Earnings Target Price Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+  <main class="calculator">
+    <header class="calculator__header">
+      <h1 class="calculator__title">Target Price Calculator</h1>
+      <p class="calculator__subtitle">Discounted owner earnings, Berkshire Hathaway holdings</p>
+    </header>
+
+    <form id="calculator-form" class="calculator__form">
+
+      <div class="field">
+        <label for="diluted-shares">Diluted average shares</label>
+        <input
+          type="number"
+          id="diluted-shares"
+          name="dilutedShares"
+          placeholder="e.g. 1,234,000,000"
+          min="0"
+          step="any"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="operating-cash-flow">Operating cash flow</label>
+        <input
+          type="number"
+          id="operating-cash-flow"
+          name="operatingCashFlow"
+          placeholder="e.g. 5,000,000,000"
+          step="any"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="capex">CapEx</label>
+        <input
+          type="number"
+          id="capex"
+          name="capex"
+          placeholder="e.g. 800,000,000"
+          step="any"
+          required
+        >
+      </div>
+
+      <button type="submit" class="calculator__submit">Calculate target price</button>
+    </form>
+
+    <section id="results" class="calculator__results" hidden>
+      <div class="result">
+        <span class="result__label">Owner earnings per share</span>
+        <span class="result__value" id="result-oe0">—</span>
+      </div>
+      <div class="result">
+        <span class="result__label">Intrinsic value per share</span>
+        <span class="result__value" id="result-iv">—</span>
+      </div>
+      <div class="result result--highlight">
+        <span class="result__label">Target price per share</span>
+        <span class="result__value" id="result-target">—</span>
+      </div>
+    </section>
+
+    <footer class="calculator__assumptions">
+      <p>Assumptions: 10-year growth period, 10% discount rate, 2.5% perpetual growth rate.</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
