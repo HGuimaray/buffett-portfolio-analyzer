@@ -14,6 +14,23 @@
       <p class="calculator__subtitle">Discounted owner earnings, Berkshire Hathaway holdings</p>
     </header>
 
+    <section class="calculator__description">
+      <p>
+        This calculator estimates a target price per share using Warren Buffett's
+        owner earnings method: projecting a company's owner earnings forward,
+        discounting them back to the present, and applying a margin of safety.
+        It's scoped to companies in Berkshire Hathaway's portfolio &mdash; long-established,
+        stable businesses &mdash; so a few inputs that would normally require deeper
+        analysis have been fixed as constants:
+      </p>
+      <ul>
+        <li><strong>Growth rate: 4%</strong> &mdash; a conservative stand-in for the
+          company-specific rate you'd otherwise derive from the last 10 years of financials.</li>
+        <li><strong>Margin of safety: 10%</strong> &mdash; lower than the 25% often used for
+          less predictable businesses, reflecting the relative stability of Berkshire holdings.</li>
+      </ul>
+    </section>
+
     <form id="calculator-form" class="calculator__form">
 
       <div class="field">
@@ -72,7 +89,7 @@
     </section>
 
     <footer class="calculator__assumptions">
-      <p>Assumptions: 10-year growth period, 10% discount rate, 2.5% perpetual growth rate.</p>
+      <p>Assumptions: 10-year growth period, 4% growth rate, 10% discount rate, 2.5% perpetual growth rate, 10% margin of safety.</p>
     </footer>
   </main>
 
