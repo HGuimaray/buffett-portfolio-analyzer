@@ -15,3 +15,5 @@ I am setting this as constants to simplify the calculator since the growth shoul
 Since the companies are in Berkshire's portfolio, they are known to be long established stable companies, therefore my MoS is 10% not 25% for example.
 
 Also since we want to make this easier to the user, add a brief description where to find the needed values on yahoo finance.
+
+explain why you are using the span tags?
