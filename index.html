@@ -51,41 +51,60 @@
 
     <form id="calculator-form" class="calculator__form">
 
+      <p class="calculator__hint">
+        You can enter values with a suffix (<strong>K</strong> = thousand,
+        <strong>M</strong> = million, <strong>B</strong> = billion) or as full numbers &mdash;
+        e.g. <code>5B</code> and <code>5,000,000,000</code> are treated the same.
+        Do not include a space between the number and the suffix
+        (use <code>5B</code>, not <code>5 B</code>).
+      </p>
+
       <div class="field">
         <label for="diluted-shares">Diluted average shares</label>
         <input
-          type="number"
+          type="text"
+          inputmode="decimal"
           id="diluted-shares"
           name="dilutedShares"
-          placeholder="e.g. 1,234,000,000"
-          min="0"
-          step="any"
+          placeholder="e.g. 1.23B (no space) or 1,234,000,000"
+          aria-describedby="diluted-shares-error"
           required
         >
+        <!-- Empty by default. script.js fills this with a validation
+             message (e.g. "This field is required.") and clears it once
+             the field becomes valid. aria-describedby links the input to
+             this span so screen readers announce the error when present. -->
+        <span class="field__error" id="diluted-shares-error"></span>
       </div>
 
       <div class="field">
         <label for="operating-cash-flow">Operating cash flow</label>
         <input
-          type="number"
+          type="text"
+          inputmode="decimal"
           id="operating-cash-flow"
           name="operatingCashFlow"
-          placeholder="e.g. 5,000,000,000"
-          step="any"
+          placeholder="e.g. 5B (no space) or 5,000,000,000"
+          aria-describedby="operating-cash-flow-error"
           required
         >
+        <!-- Error message slot for this field, populated/cleared by script.js. -->
+        <span class="field__error" id="operating-cash-flow-error"></span>
       </div>
 
       <div class="field">
         <label for="capex">CapEx</label>
         <input
-          type="number"
+          type="text"
+          inputmode="decimal"
           id="capex"
           name="capex"
-          placeholder="e.g. 800,000,000"
-          step="any"
+          placeholder="e.g. 800M (no space) or 800,000,000"
+          aria-describedby="capex-error"
           required
         >
+        <!-- Error message slot for this field, populated/cleared by script.js. -->
+        <span class="field__error" id="capex-error"></span>
       </div>
 
       <button type="submit" class="calculator__submit">Calculate target price</button>
