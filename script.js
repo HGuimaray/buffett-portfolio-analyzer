@@ -38,6 +38,7 @@ const resultsSection = document.getElementById('results');
 const resultOE0 = document.getElementById('result-oe0');
 const resultIV = document.getElementById('result-iv');
 const resultTarget = document.getElementById('result-target');
+const resetButton = document.getElementById('reset-button');
 
 
 // ---------------------------------------------------------
@@ -226,8 +227,23 @@ function renderResults({ oe0, iv, targetPrice }) {
   resultsSection.hidden = false;
 }
 
+// Clears the 3 inputs and any error messages, hides the results section,
+// and returns focus to the first field so the user can start a fresh entry.
+function resetForm() {
+  form.reset();
+
+  dilutedSharesError.textContent = '';
+  operatingCashFlowError.textContent = '';
+  capexError.textContent = '';
+
+  resultsSection.hidden = true;
+
+  dilutedSharesInput.focus();
+}
+
 
 // ---------------------------------------------------------
 // 7. EVENT LISTENERS / INIT
 // ---------------------------------------------------------
 form.addEventListener('submit', handleFormSubmit);
+resetButton.addEventListener('click', resetForm);
