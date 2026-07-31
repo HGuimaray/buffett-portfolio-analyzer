@@ -26,6 +26,9 @@
       <ul>
         <li><strong>Growth rate: 4%</strong> &mdash; a conservative stand-in for the
           company-specific rate you'd otherwise derive from the last 10 years of financials.</li>
+        <li><strong>Terminal (perpetual) growth rate: 2.5%</strong> &mdash; the growth rate
+          assumed forever after year 10, sitting comfortably within the typical 2&ndash;3% range
+          used for mature, stable businesses like these.</li>
         <li><strong>Margin of safety: 10%</strong> &mdash; lower than the 25% often used for
           less predictable businesses, reflecting the relative stability of Berkshire holdings.</li>
       </ul>
@@ -131,6 +134,14 @@
         <span class="result__label">Target price per share</span>
         <span class="result__value" id="result-target">—</span>
       </div>
+
+      <!-- Shown alongside the results (same hidden section, so it appears/
+           disappears together with them). Clicking it clears the 3 inputs
+           and any error messages, then hides this whole results section
+           again, ready for a new company's numbers. -->
+      <button type="button" id="reset-button" class="calculator__reset">
+        Evaluate another company
+      </button>
     </section>
 
     <footer class="calculator__assumptions">
