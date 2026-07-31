@@ -32,5 +32,9 @@ option 1 seems best since we still want to make this user friendly plus having t
 When validating, force the user to use the format with no spaces such as 5B instead of 5 B. Show the format or include this example so the user knows to omit the space
 
 add comments to the index.html file explaining the new lines are error messages
+
+CSS SECTION:
+now I guess the easy part. Create the css file for this
+Looks good, you forgot to include the 2.5% constant (the terminal growth rate) on the html file. I used this because its range is usually between 2% to 3%.
 i want to add a button asking the user if he wants to evaluate another company again. 
 The object being when he clicks the buttons, the boxes in the form will reset to blank waiting for new inputs
