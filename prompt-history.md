@@ -17,3 +17,6 @@ Since the companies are in Berkshire's portfolio, they are known to be long esta
 Also since we want to make this easier to the user, add a brief description where to find the needed values on yahoo finance.
 
 explain why you are using the span tags?
+
+JAVASCRIPT SECTION:
+now let's work on the javascript file. First give me your proposed layout using TODO comments for this project
