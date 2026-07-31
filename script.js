@@ -1,84 +1,233 @@
 // =========================================================
-// Target Price Calculator — script.js layout
+// Target Price Calculator — script.js
 // =========================================================
 
 // ---------------------------------------------------------
 // 1. CONSTANTS
 // ---------------------------------------------------------
-// TODO: Define fixed assumptions as named constants
-//   - GROWTH_RATE = 0.04            (g)
-//   - DISCOUNT_RATE = 0.10          (d)
-//   - PERPETUAL_GROWTH_RATE = 0.025 (g_perp)
-//   - MARGIN_OF_SAFETY = 0.10       (MoS)
-//   - GROWTH_PERIOD_YEARS = 10      (m)
+const GROWTH_RATE = 0.04;             // g
+const DISCOUNT_RATE = 0.10;           // d
+const PERPETUAL_GROWTH_RATE = 0.025;  // g_perp
+const MARGIN_OF_SAFETY = 0.10;        // MoS
+const GROWTH_PERIOD_YEARS = 10;       // m
+
+// Multipliers for shorthand suffixes, so every input converts to the same
+// base unit (raw dollars / raw share count) before any math is done.
+// This is what prevents a "5B" vs "800M" mismatch from throwing off the calculation.
+const SUFFIX_MULTIPLIERS = {
+  K: 1e3,
+  M: 1e6,
+  B: 1e9,
+};
 
 
 // ---------------------------------------------------------
 // 2. DOM REFERENCES
 // ---------------------------------------------------------
-// TODO: Grab the form element (#calculator-form)
-// TODO: Grab the 3 input fields (diluted-shares, operating-cash-flow, capex)
-// TODO: Grab the results section (#results) and its value spans
-//   (#result-oe0, #result-iv, #result-target)
+const form = document.getElementById('calculator-form');
+
+const dilutedSharesInput = document.getElementById('diluted-shares');
+const operatingCashFlowInput = document.getElementById('operating-cash-flow');
+const capexInput = document.getElementById('capex');
+
+const dilutedSharesError = document.getElementById('diluted-shares-error');
+const operatingCashFlowError = document.getElementById('operating-cash-flow-error');
+const capexError = document.getElementById('capex-error');
+
+const resultsSection = document.getElementById('results');
+const resultOE0 = document.getElementById('result-oe0');
+const resultIV = document.getElementById('result-iv');
+const resultTarget = document.getElementById('result-target');
 
 
 // ---------------------------------------------------------
 // 3. INPUT HANDLING / VALIDATION
 // ---------------------------------------------------------
-// TODO: Function to read + parse raw input values as numbers
-// TODO: Function to validate inputs (e.g. shares > 0, required fields filled,
-//       no negative diluted shares, etc.)
-// TODO: Decide how to handle/display validation errors to the user
+
+// Parses a raw input string into a plain number, expanding any K/M/B suffix
+// to its full value. Accepts optional commas and whitespace.
+// Examples: "5B" -> 5000000000, "800M" -> 800000000, "1,234,000,000" -> 1234000000
+// Returns NaN if the string doesn't match a recognizable number/suffix format.
+function parseSuffixedNumber(rawValue) {
+  if (typeof rawValue !== 'string') {
+    return NaN;
+  }
+
+  const cleaned = rawValue.trim().toUpperCase().replace(/,/g, '');
+
+  // Matches an optional leading minus, digits, optional decimal, optional K/M/B suffix.
+  // The suffix must sit directly against the number (e.g. "5B") — no space allowed
+  // (e.g. "5 B" will NOT match and is correctly rejected as invalid).
+  const match = cleaned.match(/^(-?\d+(?:\.\d+)?)([KMB]?)$/);
+
+  if (!match) {
+    return NaN;
+  }
+
+  const [, numberPart, suffix] = match;
+  const baseValue = parseFloat(numberPart);
+  const multiplier = suffix ? SUFFIX_MULTIPLIERS[suffix] : 1;
+
+  return baseValue * multiplier;
+}
+
+// Reads the 3 form inputs and converts them to numbers (suffix-aware).
+function getInputValues() {
+  return {
+    dilutedShares: parseSuffixedNumber(dilutedSharesInput.value),
+    operatingCashFlow: parseSuffixedNumber(operatingCashFlowInput.value),
+    capex: parseSuffixedNumber(capexInput.value),
+  };
+}
+
+// Checks each parsed input and returns an object of field -> error message.
+// A field with no error is omitted from the returned object.
+// This (rather than a single true/false) is what lets us show the user
+// exactly which field is wrong and why.
+function validateInputs({ dilutedShares, operatingCashFlow, capex }) {
+  const errors = {};
+
+  if (dilutedSharesInput.value.trim() === '') {
+    errors.dilutedShares = 'This field is required.';
+  } else if (Number.isNaN(dilutedShares)) {
+    errors.dilutedShares = 'Enter a number, optionally with a K/M/B suffix (e.g. 5B) — no space before the suffix.';
+  } else if (dilutedShares <= 0) {
+    // Diluted shares is the denominator in the OE0 formula — dividing by
+    // zero (or a negative share count) must be blocked explicitly.
+    errors.dilutedShares = 'Diluted shares must be greater than 0.';
+  }
+
+  if (operatingCashFlowInput.value.trim() === '') {
+    errors.operatingCashFlow = 'This field is required.';
+  } else if (Number.isNaN(operatingCashFlow)) {
+    errors.operatingCashFlow = 'Enter a number, optionally with a K/M/B suffix (e.g. 5B) — no space before the suffix.';
+  }
+
+  if (capexInput.value.trim() === '') {
+    errors.capex = 'This field is required.';
+  } else if (Number.isNaN(capex)) {
+    errors.capex = 'Enter a number, optionally with a K/M/B suffix (e.g. 800M) — no space before the suffix.';
+  }
+
+  return errors;
+}
+
+// Writes error messages into each field's error slot and clears any that
+// no longer apply. Returns true if there were no errors at all.
+function renderErrors(errors) {
+  dilutedSharesError.textContent = errors.dilutedShares || '';
+  operatingCashFlowError.textContent = errors.operatingCashFlow || '';
+  capexError.textContent = errors.capex || '';
+
+  return Object.keys(errors).length === 0;
+}
 
 
 // ---------------------------------------------------------
 // 4. CORE CALCULATION FUNCTIONS
 // ---------------------------------------------------------
-// TODO: calculateOE0(operatingCashFlow, capex, dilutedShares)
-//       -> OE0 = (OCF - |CapEx|) / diluted shares
 
-// TODO: calculateOEt(oe0, growthRate, year)
-//       -> OEt = OE0 * (1 + g)^t
+// OE0 = (OCF - |CapEx|) / diluted shares
+function calculateOE0(operatingCashFlow, capex, dilutedShares) {
+  return (operatingCashFlow - Math.abs(capex)) / dilutedShares;
+}
 
-// TODO: calculatePresentValueOfOE(oe0, growthRate, discountRate, years)
-//       -> sums OEt / (1+d)^t for t = 1..10 (loop or reduce)
+// OEt = OE0 * (1 + g)^t
+function calculateOEt(oe0, growthRate, year) {
+  return oe0 * Math.pow(1 + growthRate, year);
+}
 
-// TODO: calculateOEm(oe0, growthRate, years)
-//       -> OEm = OE0 * (1 + g)^m  (owner earnings at end of growth period)
+// Sums the discounted owner earnings for t = 1..m using a for loop.
+// PV sum = Σ [ OEt / (1 + d)^t ]  for t = 1 to years
+function calculatePresentValueOfOE(oe0, growthRate, discountRate, years) {
+  let sum = 0;
 
-// TODO: calculateTerminalValue(oeM, perpGrowthRate, discountRate)
-//       -> TV = OEm * (1 + g_perp) / (d - g_perp)
+  for (let t = 1; t <= years; t++) {
+    const oeT = calculateOEt(oe0, growthRate, t);
+    const discountedOeT = oeT / Math.pow(1 + discountRate, t);
+    sum += discountedOeT;
+  }
 
-// TODO: calculateIntrinsicValue(sumPvOE, terminalValue, discountRate, years)
-//       -> IV = sumPvOE + TV / (1+d)^m
+  return sum;
+}
 
-// TODO: calculateTargetPrice(intrinsicValue, marginOfSafety)
-//       -> Target Price = IV * (1 - MoS)
+// OEm = OE0 * (1 + g)^m  (owner earnings at the end of the growth period)
+function calculateOEm(oe0, growthRate, years) {
+  return oe0 * Math.pow(1 + growthRate, years);
+}
+
+// TV = [ OEm * (1 + g_perp) ] / (d - g_perp)
+function calculateTerminalValue(oeM, perpGrowthRate, discountRate) {
+  return (oeM * (1 + perpGrowthRate)) / (discountRate - perpGrowthRate);
+}
+
+// IV = PV sum of OE + TV / (1 + d)^m
+function calculateIntrinsicValue(sumPvOE, terminalValue, discountRate, years) {
+  const discountedTerminalValue = terminalValue / Math.pow(1 + discountRate, years);
+  return sumPvOE + discountedTerminalValue;
+}
+
+// Target Price = IV * (1 - MoS)
+function calculateTargetPrice(intrinsicValue, marginOfSafety) {
+  return intrinsicValue * (1 - marginOfSafety);
+}
 
 
 // ---------------------------------------------------------
 // 5. ORCHESTRATION / MAIN HANDLER
 // ---------------------------------------------------------
-// TODO: handleFormSubmit(event)
-//       - preventDefault()
-//       - read + validate inputs
-//       - run calculation pipeline (OE0 -> PV sum -> TV -> IV -> target price)
-//       - call render function with results
-//       - handle/display errors if validation fails
+
+function handleFormSubmit(event) {
+  event.preventDefault();
+
+  const inputs = getInputValues();
+  const errors = validateInputs(inputs);
+  const isValid = renderErrors(errors);
+
+  if (!isValid) {
+    return;
+  }
+
+  // Step-by-step pipeline, each result feeding into the next formula.
+  const oe0 = calculateOE0(inputs.operatingCashFlow, inputs.capex, inputs.dilutedShares);
+
+  const sumPvOE = calculatePresentValueOfOE(oe0, GROWTH_RATE, DISCOUNT_RATE, GROWTH_PERIOD_YEARS);
+
+  const oeM = calculateOEm(oe0, GROWTH_RATE, GROWTH_PERIOD_YEARS);
+
+  const terminalValue = calculateTerminalValue(oeM, PERPETUAL_GROWTH_RATE, DISCOUNT_RATE);
+
+  const intrinsicValue = calculateIntrinsicValue(sumPvOE, terminalValue, DISCOUNT_RATE, GROWTH_PERIOD_YEARS);
+
+  const targetPrice = calculateTargetPrice(intrinsicValue, MARGIN_OF_SAFETY);
+
+  renderResults({ oe0, iv: intrinsicValue, targetPrice });
+}
 
 
 // ---------------------------------------------------------
 // 6. RENDER / OUTPUT
 // ---------------------------------------------------------
-// TODO: formatCurrency(value) -> consistent $ formatting (e.g. Intl.NumberFormat)
-// TODO: renderResults({ oe0, iv, targetPrice })
-//       - populate #result-oe0, #result-iv, #result-target
-//       - unhide #results section
-// TODO: (optional) resetResults() -> hide/clear results if form is edited again
+
+// Formats a number as USD currency, e.g. 42.5 -> "$42.50"
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value);
+}
+
+// Writes the calculated values into the results section and reveals it.
+function renderResults({ oe0, iv, targetPrice }) {
+  resultOE0.textContent = formatCurrency(oe0);
+  resultIV.textContent = formatCurrency(iv);
+  resultTarget.textContent = formatCurrency(targetPrice);
+
+  resultsSection.hidden = false;
+}
 
 
 // ---------------------------------------------------------
 // 7. EVENT LISTENERS / INIT
 // ---------------------------------------------------------
-// TODO: form.addEventListener('submit', handleFormSubmit)
-// TODO: (optional) input listeners to reset/hide results when user edits values
+form.addEventListener('submit', handleFormSubmit);
