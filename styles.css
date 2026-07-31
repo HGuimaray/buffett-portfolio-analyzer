@@ -1,1 +1,354 @@
+/* =========================================================
+   Target Price Calculator — style.css
 
+   Design concept: an old-style financial ledger / annual report.
+   A cream "paper" card sits on a deep forest-green desk background,
+   with brass accents and monospace numerals for that statement-of-
+   accounts feel. The signature touch is the double rule above the
+   Target Price row — the classic accounting "bottom line" convention,
+   used here because that's literally what this number is.
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Color tokens */
+  --color-bg: #17261d;
+  --color-paper: #fbf7ec;
+  --color-ink: #22281f;
+  --color-muted: #6e6656;
+  --color-brass: #a97c3f;
+  --color-brass-light: #c9a06a;
+  --color-forest: #2f5233;
+  --color-error: #9c3b2e;
+  --color-border: #d9cfb5;
+
+  /* Type tokens */
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  /* Layout tokens */
+  --card-max-width: 640px;
+  --radius: 3px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(169, 124, 63, 0.08), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(169, 124, 63, 0.06), transparent 40%);
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px;
+}
+
+/* ---------------------------------------------------------
+   Card shell
+   --------------------------------------------------------- */
+.calculator {
+  width: 100%;
+  max-width: var(--card-max-width);
+  background: var(--color-paper);
+  border-radius: var(--radius);
+  border-top: 4px solid var(--color-brass);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 12px 32px rgba(0, 0, 0, 0.35);
+  padding: 40px 44px 32px;
+}
+
+@media (max-width: 480px) {
+  .calculator {
+    padding: 28px 22px 24px;
+  }
+}
+
+/* ---------------------------------------------------------
+   Header
+   --------------------------------------------------------- */
+.calculator__header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.calculator__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.9rem;
+  letter-spacing: 0.01em;
+  margin: 0 0 6px;
+  color: var(--color-ink);
+}
+
+.calculator__subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------
+   Description & how-to sections
+   --------------------------------------------------------- */
+.calculator__description,
+.calculator__how-to {
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  margin-top: 20px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--color-ink);
+}
+
+.calculator__description p,
+.calculator__how-to p {
+  margin: 0 0 12px;
+}
+
+.how-to__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--color-forest);
+}
+
+.calculator__description ul,
+.calculator__how-to ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.calculator__description li,
+.calculator__how-to li {
+  margin-bottom: 8px;
+}
+
+.calculator__description a,
+.calculator__how-to a {
+  color: var(--color-forest);
+  text-decoration-color: var(--color-brass);
+  text-underline-offset: 2px;
+}
+
+.calculator__description code,
+.calculator__how-to code,
+.calculator__hint code {
+  font-family: var(--font-mono);
+  background: rgba(169, 124, 63, 0.12);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: 0.88em;
+}
+
+/* ---------------------------------------------------------
+   Form
+   --------------------------------------------------------- */
+.calculator__form {
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.calculator__hint {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+  background: rgba(169, 124, 63, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin: 0 0 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.field input {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--color-ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--color-border);
+  padding: 8px 2px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.field input::placeholder {
+  color: #a39d8a;
+}
+
+.field input:hover {
+  border-bottom-color: var(--color-brass-light);
+}
+
+.field input:focus {
+  border-bottom-color: var(--color-brass);
+  box-shadow: 0 1px 0 0 var(--color-brass);
+}
+
+.field input:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 3px;
+}
+
+.field__error {
+  min-height: 1.1em;
+  font-size: 0.8rem;
+  color: var(--color-error);
+}
+
+/* ---------------------------------------------------------
+   Buttons
+   --------------------------------------------------------- */
+.calculator__submit,
+.calculator__reset {
+  display: block;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius);
+  border: none;
+  padding: 13px 20px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.calculator__submit {
+  background: var(--color-forest);
+  color: var(--color-paper);
+  margin-top: 6px;
+}
+
+.calculator__submit:hover {
+  background: #244028;
+}
+
+.calculator__submit:active {
+  transform: translateY(1px);
+}
+
+.calculator__reset {
+  background: transparent;
+  color: var(--color-forest);
+  border: 1.5px solid var(--color-forest);
+  margin-top: 20px;
+}
+
+.calculator__reset:hover {
+  background: rgba(47, 82, 51, 0.08);
+}
+
+.calculator__submit:focus-visible,
+.calculator__reset:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------
+   Results — styled like a financial statement's line items,
+   with the target price as the double-ruled "bottom line".
+   --------------------------------------------------------- */
+.calculator__results {
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  margin-top: 24px;
+}
+
+.result {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+}
+
+.result__label {
+  font-size: 0.88rem;
+  color: var(--color-muted);
+}
+
+.result__value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+/* The signature moment: double rule above the final bottom-line value,
+   echoing the "total" convention on a real financial statement. */
+.result--highlight {
+  margin-top: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-ink);
+  box-shadow: 0 3px 0 -2px var(--color-ink);
+}
+
+.result--highlight .result__label {
+  font-weight: 600;
+  color: var(--color-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85rem;
+}
+
+.result--highlight .result__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-forest);
+}
+
+/* ---------------------------------------------------------
+   Footer
+   --------------------------------------------------------- */
+.calculator__assumptions {
+  border-top: 1px solid var(--color-border);
+  margin-top: 28px;
+  padding-top: 16px;
+}
+
+.calculator__assumptions p {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------
+   Reduced motion
+   --------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .calculator__submit,
+  .calculator__reset,
+  .field input {
+    transition: none;
+  }
+}
