@@ -20,3 +20,13 @@ explain why you are using the span tags?
 
 JAVASCRIPT SECTION:
 now let's work on the javascript file. First give me your proposed layout using TODO comments for this project
+
+I wanted to break it down in functions since it is easier to debug and to follow along. We use a lot of formulas that are part of another formula and so on. Regarding the summation, use a for loop.
+Do this first, then we I need you to explain further both options for validation errors
+
+is this validation control also for the B or M suffixes? I am concerned the user might enter those values and throw off the calculations.
+Note that if the input values have the same suffixes, they cancel each other out but what if the numerator is in billions and the numerator is in millions.
+Furthermore another validation must be made so the denominator can not be equal to zero.
+
+option 1 seems best since we still want to make this user friendly plus having the user enter the whole number manually might be worse because it is prone to have more errors by adding or missing zeros.
+When validating, force the user to use the format with no spaces such as 5B instead of 5 B. Show the format or include this example so the user knows to omit the space
