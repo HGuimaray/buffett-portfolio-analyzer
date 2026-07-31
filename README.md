@@ -63,6 +63,3 @@ Claude (Anthropic) — used throughout the project to translate the handwritten 
 Running the Project
 
 Open the live demo link above: https://hguimaray.github.io/buffett-portfolio-analyzer/ No setup, downloads, or installation needed.
-
-
-Open the live demo link above: https://hguimaray.github.io/buffett-portfolio-analyzer/ No setup, downloads, or installation needed.
